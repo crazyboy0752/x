@@ -89,17 +89,6 @@ def chat_with_xai(user_id: str, user_message: str) -> str:
         
 
 
-# 转义 MarkdownV2 的特殊字符
-def escape_markdown_v2(text: str) -> str:
-    """
-    转义 Telegram MarkdownV2 格式的特殊字符。
-    """
-    # Telegram MarkdownV2 需要转义的字符
-    special_chars = r'_*[]()~`>#+-=|{}.!'
-    escaped_text = re.sub(f'([{re.escape(special_chars)}])', r'\\\1', text)
-    return escaped_text
-
-
 # 处理普通消息
 async def handle_message(update: Update, context: CallbackContext):
     user_id = str(update.effective_user.id)
@@ -108,19 +97,16 @@ async def handle_message(update: Update, context: CallbackContext):
 
     # 获取回复
     response = chat_with_xai(user_id, user_message)
-    
-    # 转义回复内容的 MarkdownV2 特殊字符
-    escaped_response = escape_markdown_v2(response)
-    
+     
     try:
-        # 回复用户，启用 MarkdownV2 格式
-        await update.message.reply_text(escaped_response, parse_mode="MarkdownV2")
+        # 回复用户，启用 Markdown 格式
+        await update.message.reply_text(response, parse_mode="Markdown")
     except Exception as e:
         # 捕获错误并记录日志
         logger.error(f"Failed to send message to user {user_id}: {e}")
         await update.message.reply_text(
             "⚠️ *An error occurred while processing your message.*",
-            parse_mode="MarkdownV2",
+            parse_mode="Markdown",
         )
 
 
